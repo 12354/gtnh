@@ -1,5 +1,5 @@
 import { ShowNei, ShowNeiMode, ShowNeiCallback } from "./nei.js";
-import { Goods, Repository, Item, Fluid, Recipe } from "./repository.js";
+import { Goods, Repository, Item, Fluid, Recipe, RecipeIoType } from "./repository.js";
 import { UpdateProject, addProjectChangeListener, GetByIid, RecipeModel, RecipeGroupModel, ProductModel, ModelObject, PageModel, DragAndDrop, page, FlowInformation, LinkAlgorithm, CopyCurrentPageUrl, DownloadCurrentPage, Search } from "./page.js";
 import { voltageTier, GtVoltageTier, formatAmount } from "./utils.js";
 import { ShowTooltip } from "./tooltip.js";
@@ -971,8 +971,48 @@ export class RecipeList {
     private renderStatus() {
         let statusMessage = "";
         let statusClass = "";
+        let useHtml = false;
         if (page.status === "infeasible") {
-            statusMessage = "Infeasible - There is no solution - You probably need to ignore some links";
+            statusMessage = "Infeasible - There is no solution";
+            let info = page.infeasibilityInfo;
+            if (info && (info.problematicLinks.length > 0 || info.problematicFixedCrafters.length > 0)) {
+                let html = `<div class="infeasibility-header">Infeasible - There is no solution</div>`;
+                html += `<div class="infeasibility-details">`;
+                if (info.problematicLinks.length > 0) {
+                    html += `<div class="infeasibility-section">Problematic links (try ignoring these):</div><ul class="infeasibility-list">`;
+                    for (const link of info.problematicLinks) {
+                        let goods = Repository.current.GetById<Goods>(link.goodsId);
+                        html += `<li>`;
+                        if (goods) {
+                            html += `<item-icon data-id="${goods.id}" class="infeasibility-icon"></item-icon> `;
+                        }
+                        html += `${this.escapeHtml(link.goodsName)}</li>`;
+                    }
+                    html += `</ul>`;
+                }
+                if (info.problematicFixedCrafters.length > 0) {
+                    html += `<div class="infeasibility-section">Fixed crafter counts causing conflicts:</div><ul class="infeasibility-list">`;
+                    for (const fc of info.problematicFixedCrafters) {
+                        let result = GetByIid(fc.recipeIid);
+                        let recipeName = "Unknown recipe";
+                        if (result && result.current instanceof RecipeModel && result.current.recipe) {
+                            let recipe = result.current.recipe;
+                            let outputItems = recipe.items.filter(i => i.type === RecipeIoType.ItemOutput || i.type === RecipeIoType.FluidOutput);
+                            if (outputItems.length > 0) {
+                                let goods = outputItems[0].goods as Goods;
+                                recipeName = goods.name ?? recipeName;
+                            }
+                        }
+                        html += `<li>Fixed crafter on recipe producing: ${this.escapeHtml(recipeName)}</li>`;
+                    }
+                    html += `</ul>`;
+                }
+                html += `</div>`;
+                statusMessage = html;
+                useHtml = true;
+            } else {
+                statusMessage = "Infeasible - There is no solution - You probably need to ignore some links";
+            }
         } else if (page.status === "unbounded") {
             statusMessage = "Unbounded - Some items can be produced infinitely";
         } else if (page.status === "solved") {
@@ -982,12 +1022,23 @@ export class RecipeList {
 
         if (this.statusMessageElement) {
             if (statusMessage) {
-                this.statusMessageElement.textContent = statusMessage;
+                if (useHtml) {
+                    this.statusMessageElement.innerHTML = statusMessage;
+                } else {
+                    this.statusMessageElement.textContent = statusMessage;
+                }
                 this.statusMessageElement.className = `status-message ${statusClass}`;
+                this.statusMessageElement.style.display = '';
             } else {
                 this.statusMessageElement.style.display = 'none';
             }
         }
+    }
+
+    private escapeHtml(text: string): string {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     private renderProductList() {

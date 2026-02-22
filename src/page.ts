@@ -336,6 +336,11 @@ export class ProductModel extends ModelObject
     }
 }
 
+export type InfeasibilityInfo = {
+    problematicLinks: {goodsId: string, goodsName: string, constraintName: string, slack: number}[];
+    problematicFixedCrafters: {recipeIid: number, constraintName: string, slack: number}[];
+}
+
 type Settings = {
     minVoltage: number;
     timeUnit: "hour" | "min" | "sec" | "tick";
@@ -349,6 +354,7 @@ export class PageModel extends ModelObject
     private history: string[] = [];
     private readonly MAX_HISTORY = 50;
     status: "not solved" | "solved" | "infeasible" | "unbounded" = "not solved";
+    infeasibilityInfo?: InfeasibilityInfo;
     settings: Settings = {minVoltage: 0, timeUnit: "min"};
     timeScale: number = 1;
 
