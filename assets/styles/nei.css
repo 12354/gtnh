@@ -206,4 +206,15 @@
         flex: 1;
         min-width: 0;
     }
+
+    .nei-recipe-names {
+        overflow: visible;
+    }
+
+    .nei-recipe-name-line {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        word-break: break-word;
+    }
 }
