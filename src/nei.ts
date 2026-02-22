@@ -55,22 +55,32 @@ type NeiFiller = (grid:NeiGrid, search : SearchQuery | null, recipes:NeiRecipeMa
 
 class ItemAllocator implements NeiRowAllocator<Goods>
 {
-    CalculateWidth(): number { return 1; }
+    CalculateWidth(): number { return isMobile() ? -1 : 1; }
     CalculateHeight(obj: Goods): number { return 1; }
     BuildRowDom(elements:Goods[], elementWidth:number, elementHeight:number, rowY:number):string
     {
         var dom:string[] = [];
         const isSelectingGoods = showNeiCallback?.onSelectGoods != null;
         const selectGoodsAction = isSelectingGoods ? ' data-action="select"' : "";
-        const gridWidth = elements.length * 36;
-        dom.push(`<div class="nei-items-row icon-grid" style="--grid-pixel-width:${gridWidth}px; --grid-pixel-height:36px; top:${elementSize*rowY}px">`);
-        for (var i=0; i<elements.length; i++) {
-            var elem = elements[i];
-            const gridX = (i % elements.length) * 36 + 2;
-            const gridY = Math.floor(i / elements.length) * 36 + 2;
-            dom.push(`<item-icon class="item-icon-grid" style="--grid-x:${gridX}px; --grid-y:${gridY}px" data-id="${elem.id}"${selectGoodsAction}></item-icon>`);
+        if (isMobile()) {
+            for (var i=0; i<elements.length; i++) {
+                var elem = elements[i];
+                dom.push(`<div class="nei-item-list-row" style="top:${elementSize*rowY}px">`);
+                dom.push(`<item-icon data-id="${elem.id}"${selectGoodsAction}></item-icon>`);
+                dom.push(`<span class="nei-item-name">${elem.name}</span>`);
+                dom.push(`</div>`);
+            }
+        } else {
+            const gridWidth = elements.length * 36;
+            dom.push(`<div class="nei-items-row icon-grid" style="--grid-pixel-width:${gridWidth}px; --grid-pixel-height:36px; top:${elementSize*rowY}px">`);
+            for (var i=0; i<elements.length; i++) {
+                var elem = elements[i];
+                const gridX = (i % elements.length) * 36 + 2;
+                const gridY = Math.floor(i / elements.length) * 36 + 2;
+                dom.push(`<item-icon class="item-icon-grid" style="--grid-x:${gridX}px; --grid-y:${gridY}px" data-id="${elem.id}"${selectGoodsAction}></item-icon>`);
+            }
+            dom.push(`</div>`);
         }
-        dom.push(`</div>`);
         return dom.join("");
     }
 }
@@ -747,9 +757,20 @@ export function GetSingleRecipeDom(recipe:Recipe, overrideIo?:RecipeInOut[])
 // Initialize tabs
 createTabs();
 
-// Add global click handler for recipe selection
+// Add global click handler for recipe selection and mobile list rows
 neiContent.addEventListener("click", (event) => {
     const target = event.target as HTMLElement;
+
+    // Handle clicks on mobile list rows (name text or row background)
+    const listRow = target.closest(".nei-item-list-row");
+    if (listRow && target.tagName !== "ITEM-ICON") {
+        const itemIcon = listRow.querySelector("item-icon") as HTMLElement;
+        if (itemIcon) {
+            itemIcon.click();
+            return;
+        }
+    }
+
     const selectButton = target.closest(".select-recipe-btn");
     if (selectButton && showNeiCallback?.onSelectRecipe) {
         const recipeOffset = parseInt(selectButton.getAttribute("data-recipe") || "0");
