@@ -643,16 +643,6 @@ export class RecipeList {
             }
         }
 
-        // Current inputs become wanted output products (positive amounts)
-        for (const [goodsId, amount] of Object.entries(flow.input)) {
-            if (amount !== 0) {
-                byproductsPage.products.push(new ProductModel({
-                    goodsId: goodsId,
-                    amount: amount
-                }));
-            }
-        }
-
         document.dispatchEvent(new CustomEvent('import-page', { detail: byproductsPage }));
     }
 
