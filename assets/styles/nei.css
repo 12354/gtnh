@@ -101,7 +101,7 @@
 }
 
 .nei-recipe-name-line {
-    font-size: 9px;
+    font-size: calc(9px * var(--font-scale));
     line-height: 14px;
     color: #3F3F3F;
     text-align: center;
@@ -143,7 +143,7 @@
 
     #nei-search {
         min-height: 36px;
-        font-size: 16px; /* Prevents iOS zoom */
+        font-size: calc(16px * var(--font-scale)); /* Prevents iOS zoom */
         flex: 1;
         min-width: 0;
     }
@@ -152,7 +152,7 @@
     #nei-close {
         min-width: 44px;
         min-height: 44px;
-        font-size: 18px;
+        font-size: calc(18px * var(--font-scale));
     }
 
     #nei-scroll {
@@ -170,7 +170,7 @@
     .select-recipe-btn {
         min-width: 36px;
         min-height: 36px;
-        font-size: 18px;
+        font-size: calc(18px * var(--font-scale));
     }
 
     /* Mobile list view for items */
@@ -197,7 +197,7 @@
 
     .nei-item-name {
         color: #3F3F3F;
-        font-size: 12px;
+        font-size: calc(12px * var(--font-scale));
         line-height: 36px;
         white-space: nowrap;
         overflow: hidden;

@@ -1,3 +1,7 @@
+:root {
+    --font-scale: 1;
+}
+
 @font-face {
     font-family:'Minecraftia';
     src: url('./../fonts/F77MinecraftRegular-0VYv.ttf');
@@ -10,7 +14,7 @@ body {
     font-kerning: none;
     image-rendering: pixelated;
     text-rendering: geometricPrecision;
-    font-size: 16px;
+    font-size: calc(16px * var(--font-scale));
     margin: 0px;
     line-height: 22px;
     color: white;
@@ -23,14 +27,14 @@ body {
 
 .text-small
 {
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     line-height: 8px;
     word-spacing: 1px;
 }
 
 button {
     font-family: 'Minecraftia', sans-serif;
-    font-size: 16px;
+    font-size: calc(16px * var(--font-scale));
     line-height: 22px;
     border: 2px solid;
     border-bottom-width: 4px;
@@ -64,7 +68,7 @@ button:hover {
 input {
     font-family:'Minecraftia', sans-serif;
     background-color: #8B8B8B;
-    font-size: 16px;
+    font-size: calc(16px * var(--font-scale));
     line-height: 16px;
     color: white;
     text-shadow: 2px 2px #342C34;
@@ -159,7 +163,7 @@ item-icon::after {
     position: absolute;
     bottom: -6px;
     right: 1px;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     text-shadow: 1px 1px #342C34;
     color: white;
     pointer-events: none;
@@ -171,7 +175,7 @@ item-icon::after {
     position: absolute;
     top: -5px;
     right: 1px;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     color: #FFD700;
     text-shadow: 1px 1px #342C34;
     pointer-events: none;
@@ -201,7 +205,7 @@ p {
 
 h2 {
     font-weight:normal;
-    font-size: 24px;
+    font-size: calc(24px * var(--font-scale));
 }
 
 #panels:has(> :not(.hidden)) {
@@ -230,7 +234,7 @@ h2 {
 h1
 {
     font-weight:normal;
-    font-size:64px;
+    font-size: calc(64px * var(--font-scale));
 }
 
 .scroll-area
@@ -266,7 +270,7 @@ a:hover {
 /* Touch-friendly tap targets - minimum 44px for interactive elements */
 @media screen and (max-width: 768px) {
     body {
-        font-size: 14px;
+        font-size: calc(14px * var(--font-scale));
         overflow-y: auto;
         overflow-x: hidden;
         height: auto;
@@ -275,32 +279,32 @@ a:hover {
     }
 
     h1 {
-        font-size: 32px;
+        font-size: calc(32px * var(--font-scale));
     }
 
     h2 {
-        font-size: 18px;
+        font-size: calc(18px * var(--font-scale));
     }
 
     button {
         min-height: 36px;
         min-width: 36px;
-        font-size: 14px;
+        font-size: calc(14px * var(--font-scale));
     }
 
     input {
-        font-size: 16px; /* Prevents iOS zoom on focus */
+        font-size: calc(16px * var(--font-scale)); /* Prevents iOS zoom on focus */
         min-height: 36px;
     }
 
     select {
-        font-size: 14px;
+        font-size: calc(14px * var(--font-scale));
         min-height: 36px;
         padding: 4px 8px;
     }
 
     .text-small {
-        font-size: 8px;
+        font-size: calc(8px * var(--font-scale));
         line-height: 10px;
     }
 
@@ -325,7 +329,7 @@ a:hover {
     }
 
     #confirm-dialog p {
-        font-size: 12px;
+        font-size: calc(12px * var(--font-scale));
     }
 
     #confirm-dialog button {
