@@ -8,7 +8,6 @@
     flex-direction: column;
     gap: 8px;
     width: 100%;
-    min-width: 800px;
 }
 
 .product-items {
@@ -298,7 +297,7 @@ select:hover {
 .recipe-item,
 .recipe-group {
     position: relative;
-} 
+}
 
 .machine-choices {
     display: flex;
@@ -312,12 +311,12 @@ select:hover {
     align-items: center;
 
     /* Allows wrapping between text and input control */
-    display: flex; 
-    flex-wrap: wrap; 
+    display: flex;
+    flex-wrap: wrap;
 
     /* Indents second line if there's a split */
-    padding-left: 2em; 
-    text-indent: -2em; 
+    padding-left: 2em;
+    text-indent: -2em;
 
     gap: 4px;
 }
@@ -345,4 +344,192 @@ select:hover {
 
 .search-container.hidden {
     display: none;
+}
+
+/* ===== Mobile Recipe List Styles ===== */
+@media screen and (max-width: 1200px) {
+    .status-message {
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #recipe-list {
+        padding: 4px;
+        padding-top: 52px; /* Space for menu toggle */
+        height: auto;
+        min-height: calc(100vh - 52px);
+        overflow-y: visible;
+        gap: 6px;
+    }
+
+    /* Make tables horizontally scrollable */
+    .recipe-list {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .recipe-table {
+        min-width: 600px;
+    }
+
+    /* Product items - stack vertically on narrow screens */
+    .product-items {
+        gap: 6px;
+        padding: 6px;
+    }
+
+    .product-item {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 2px;
+        min-height: 40px;
+    }
+
+    .product-item .amount {
+        width: 70px;
+        min-height: 32px;
+        font-size: 14px;
+    }
+
+    .product-item .delete-btn {
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    /* Larger touch targets for buttons */
+    .collapse-btn,
+    .expand-btn {
+        width: 32px;
+        height: 32px;
+        background-size: 32px 32px;
+    }
+
+    .delete-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .icon-container {
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    /* Short info */
+    .short-info {
+        font-size: 13px;
+    }
+
+    .group-name {
+        font-size: 13px;
+    }
+
+    .group-name-input {
+        font-size: 13px;
+        min-height: 32px;
+    }
+
+    /* Status message */
+    .status-message {
+        width: auto;
+        margin-left: 48px;
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    /* Search bar */
+    .search-container {
+        top: 4px;
+        right: 4px;
+        left: 52px;
+        padding: 4px 6px;
+    }
+
+    .search-container input {
+        min-height: 32px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .search-container button {
+        min-width: 36px;
+        min-height: 36px;
+    }
+
+    /* Machine choices */
+    .machine-choice-container {
+        padding-left: 0;
+        text-indent: 0;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .machine-choices input,
+    .machine-choices select {
+        min-height: 36px;
+        width: 100%;
+    }
+
+    /* Group buttons */
+    .group-buttons {
+        padding: 8px 4px;
+    }
+
+    .group-buttons a {
+        padding: 4px 0;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Settings panel */
+    .settings-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .setting-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .setting-item select {
+        width: 100%;
+    }
+
+    .share-links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .share-links a {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* Links grid - slightly bigger touch targets */
+    .links-grid {
+        gap: 6px;
+    }
+
+    .links-grid item-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* IO items */
+    .io-items {
+        gap: 2px;
+        min-height: 36px;
+    }
+
+    /* Voltage tier select */
+    select.voltage-tier-select {
+        font-size: 12px;
+        min-height: 32px;
+    }
 }

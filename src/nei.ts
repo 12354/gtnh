@@ -588,11 +588,26 @@ class NeiGrid implements NeiGridAllocator<any>
     }
 }
 
+function isMobile(): boolean {
+    return window.innerWidth <= 768;
+}
+
 function Resize()
 {
-    var newUnitWidth = Math.round((window.innerWidth - 30 - scrollWidth) / elementSize);
-    var newUnitHeight = Math.round((window.innerHeight - 120) / elementSize);
-    var widthRemainder = window.innerWidth - newUnitWidth;
+    let horizontalPadding: number;
+    let verticalPadding: number;
+
+    if (isMobile()) {
+        // On mobile, NEI is full-screen; use tighter margins
+        horizontalPadding = 8;
+        verticalPadding = 100; // space for search bar + tabs
+    } else {
+        horizontalPadding = 30;
+        verticalPadding = 120;
+    }
+
+    var newUnitWidth = Math.round((window.innerWidth - horizontalPadding - scrollWidth) / elementSize);
+    var newUnitHeight = Math.round((window.innerHeight - verticalPadding) / elementSize);
     if (newUnitWidth !== unitWidth || newUnitHeight !== unitHeight)
     {
         unitWidth = newUnitWidth;
@@ -603,8 +618,8 @@ function Resize()
             windowWidth++;
         if ((window.innerWidth - windowHeight) % 2 == 1)
             windowHeight++;
-        neiScrollBox.style.width = `${windowWidth}px`;
-        neiScrollBox.style.height = `${windowHeight}px`;
+        neiScrollBox.style.width = isMobile() ? '100%' : `${windowWidth}px`;
+        neiScrollBox.style.height = isMobile() ? `${windowHeight}px` : `${windowHeight}px`;
     }
     RefreshNeiContents();
 }

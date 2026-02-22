@@ -445,15 +445,84 @@ export class RecipeList {
             e.preventDefault();
             const dropZone = (e.target as HTMLElement)?.closest(".recipe-item, .recipe-group, .group-buttons");
             if (!dropZone) return;
-            
+
             dropZone.classList.remove("drag-over");
             const draggedIid = parseInt(e.dataTransfer?.getData("text/plain") || "0");
             const targetIid = parseInt(dropZone.getAttribute("data-iid") || "0");
-            
+
             if (draggedIid && targetIid) {
                 DragAndDrop(draggedIid, targetIid);
             }
         });
+
+        // ===== Touch-based drag and drop for mobile =====
+        let touchDragIid = 0;
+        let touchDragElement: HTMLElement | null = null;
+        let touchDragStartY = 0;
+        let touchDragActive = false;
+        let currentDropTarget: Element | null = null;
+
+        document.addEventListener("touchstart", (e) => {
+            const draggable = (e.target as HTMLElement)?.closest("[draggable]") as HTMLElement;
+            if (!draggable) return;
+
+            touchDragIid = parseInt(draggable.getAttribute("data-iid") || "0");
+            touchDragElement = draggable;
+            touchDragStartY = e.touches[0].clientY;
+            touchDragActive = false;
+        }, { passive: true });
+
+        document.addEventListener("touchmove", (e) => {
+            if (!touchDragElement || !touchDragIid) return;
+
+            const deltaY = Math.abs(e.touches[0].clientY - touchDragStartY);
+
+            // Require minimum movement to activate drag (avoid accidental drags)
+            if (!touchDragActive && deltaY > 20) {
+                touchDragActive = true;
+                touchDragElement.classList.add("dragging");
+            }
+
+            if (!touchDragActive) return;
+
+            // Find the drop target under the touch point
+            // Temporarily hide the dragged element to find what's underneath
+            const touch = e.touches[0];
+            const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            const dropZone = elemBelow?.closest(".recipe-item, .recipe-group, .group-buttons");
+
+            if (currentDropTarget && currentDropTarget !== dropZone) {
+                currentDropTarget.classList.remove("drag-over");
+            }
+            if (dropZone && dropZone !== touchDragElement) {
+                dropZone.classList.add("drag-over");
+                currentDropTarget = dropZone;
+            }
+        }, { passive: true });
+
+        document.addEventListener("touchend", (e) => {
+            if (!touchDragActive || !touchDragElement) {
+                touchDragElement = null;
+                touchDragIid = 0;
+                return;
+            }
+
+            touchDragElement.classList.remove("dragging");
+
+            if (currentDropTarget) {
+                currentDropTarget.classList.remove("drag-over");
+                const targetIid = parseInt(currentDropTarget.getAttribute("data-iid") || "0");
+
+                if (touchDragIid && targetIid && touchDragIid !== targetIid) {
+                    DragAndDrop(touchDragIid, targetIid);
+                }
+            }
+
+            touchDragElement = null;
+            touchDragIid = 0;
+            touchDragActive = false;
+            currentDropTarget = null;
+        }, { passive: true });
     }
 
     private setupSearch() {
