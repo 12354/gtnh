@@ -28,7 +28,7 @@
 
 .menu-header {
     position: relative;
-    font-size: 24px;
+    font-size: calc(24px * var(--font-scale));
     font-weight: bold;
     text-align: center;
 }
@@ -57,6 +57,23 @@
     border-width: 2px;
     box-shadow: none;
     padding: 2px;
+}
+
+.font-size-setting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.font-size-setting button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+}
+
+.font-size-value {
+    min-width: 40px;
+    text-align: center;
 }
 
 .new-page-widget {
@@ -162,7 +179,7 @@
         display: block;
         min-height: 44px;
         min-width: 44px;
-        font-size: 20px;
+        font-size: calc(20px * var(--font-scale));
         padding: 8px 12px;
         top: 4px;
         left: 4px;
@@ -190,12 +207,12 @@
     }
 
     .menu-header {
-        font-size: 18px;
+        font-size: calc(18px * var(--font-scale));
     }
 
     .menu-links {
         gap: 6px;
-        font-size: 12px;
+        font-size: calc(12px * var(--font-scale));
     }
 
     .menu-links a {
@@ -208,7 +225,7 @@
     .page-button {
         padding: 6px 4px;
         min-height: 40px;
-        font-size: 13px;
+        font-size: calc(13px * var(--font-scale));
     }
 
     .page-list {
@@ -221,7 +238,7 @@
 
     .active-page input {
         min-height: 32px;
-        font-size: 13px;
+        font-size: calc(13px * var(--font-scale));
     }
 
     .new-page-form {

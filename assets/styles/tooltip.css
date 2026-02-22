@@ -38,7 +38,7 @@
 #tooltip-debug
 {
     color: #FFFFFF69;
-    font-size: 8px;
+    font-size: calc(8px * var(--font-scale));
     word-spacing: 1px;
     text-shadow: 1px 1px #342C34;
     line-height: 16px;
@@ -95,7 +95,7 @@
 }
 
 .item-name {
-    font-size: 14px;
+    font-size: calc(14px * var(--font-scale));
     color: #fff;
 } 
 
@@ -115,22 +115,22 @@
     #tooltip {
         max-width: calc(100vw - 16px);
         max-height: 50vh;
-        font-size: 12px;
+        font-size: calc(12px * var(--font-scale));
         padding: 4px 8px;
     }
 
     #tooltip-header {
-        font-size: 14px;
+        font-size: calc(14px * var(--font-scale));
     }
 
     #tooltip-debug {
-        font-size: 7px;
+        font-size: calc(7px * var(--font-scale));
     }
 
     #dropdown {
         max-width: calc(100vw - 16px);
         max-height: 70vh;
-        font-size: 12px;
+        font-size: calc(12px * var(--font-scale));
         padding: 6px;
     }
 
@@ -145,7 +145,7 @@
     }
 
     .item-name {
-        font-size: 12px;
+        font-size: calc(12px * var(--font-scale));
     }
 
     .crafter-count {

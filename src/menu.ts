@@ -432,6 +432,46 @@ export class PageManager {
 
 new PageManager();
 
+// Font size modifier
+const FONT_SIZE_KEY = 'font-size-percent';
+const FONT_SIZE_MIN = 50;
+const FONT_SIZE_MAX = 200;
+const FONT_SIZE_STEP = 10;
+
+function getFontSizePercent(): number {
+    const stored = localStorage.getItem(FONT_SIZE_KEY);
+    if (stored) {
+        const val = parseInt(stored, 10);
+        if (!isNaN(val) && val >= FONT_SIZE_MIN && val <= FONT_SIZE_MAX) return val;
+    }
+    return 100;
+}
+
+function applyFontSize(percent: number) {
+    document.documentElement.style.setProperty('--font-scale', String(percent / 100));
+    const display = document.getElementById('font-size-value');
+    if (display) display.textContent = `${percent}%`;
+    localStorage.setItem(FONT_SIZE_KEY, String(percent));
+}
+
+// Apply saved font size immediately
+let currentFontSize = getFontSizePercent();
+applyFontSize(currentFontSize);
+
+document.getElementById('font-size-decrease')?.addEventListener('click', () => {
+    if (currentFontSize > FONT_SIZE_MIN) {
+        currentFontSize -= FONT_SIZE_STEP;
+        applyFontSize(currentFontSize);
+    }
+});
+
+document.getElementById('font-size-increase')?.addEventListener('click', () => {
+    if (currentFontSize < FONT_SIZE_MAX) {
+        currentFontSize += FONT_SIZE_STEP;
+        applyFontSize(currentFontSize);
+    }
+});
+
 // Menu toggle functionality
 const menuToggle = document.querySelector('.menu-toggle') as HTMLElement;
 const menu = document.getElementById('menu')!;
