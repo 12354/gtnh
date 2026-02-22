@@ -94,19 +94,37 @@ function ShowTooltipRaw(target:HTMLElement, header:string, debug:string|null, de
 
     const targetRect = target.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
+    const isMobileView = window.innerWidth <= 768;
 
-    const isRightHalf = targetRect.left > window.innerWidth / 2;
+    if (isMobileView) {
+        // On mobile, center tooltip horizontally and show below/above target
+        const tooltipWidth = Math.min(tooltipRect.width, window.innerWidth - 16);
+        const left = Math.max(8, (window.innerWidth - tooltipWidth) / 2);
+        tooltip.style.left = `${left}px`;
 
-    if (isRightHalf) {
-        tooltip.style.left = `${targetRect.left - tooltipRect.width}px`;
+        // Prefer showing below the target
+        const spaceBelow = window.innerHeight - targetRect.bottom - 8;
+        const spaceAbove = targetRect.top - 8;
+
+        if (spaceBelow >= tooltipRect.height || spaceBelow >= spaceAbove) {
+            tooltip.style.top = `${Math.min(targetRect.bottom + 4, window.innerHeight - tooltipRect.height - 8)}px`;
+        } else {
+            tooltip.style.top = `${Math.max(8, targetRect.top - tooltipRect.height - 4)}px`;
+        }
     } else {
-        tooltip.style.left = `${targetRect.right}px`;
-    }
+        const isRightHalf = targetRect.left > window.innerWidth / 2;
 
-    if (targetRect.top + tooltipRect.height > window.innerHeight) {
-        tooltip.style.top = `${window.innerHeight - tooltipRect.height}px`;
-    } else {
-        tooltip.style.top = `${Math.max(targetRect.top, 0)}px`;
+        if (isRightHalf) {
+            tooltip.style.left = `${targetRect.left - tooltipRect.width}px`;
+        } else {
+            tooltip.style.left = `${targetRect.right}px`;
+        }
+
+        if (targetRect.top + tooltipRect.height > window.innerHeight) {
+            tooltip.style.top = `${window.innerHeight - tooltipRect.height}px`;
+        } else {
+            tooltip.style.top = `${Math.max(targetRect.top, 0)}px`;
+        }
     }
 }
 
@@ -124,3 +142,12 @@ export function IsHovered(obj:HTMLElement):boolean
 {
     return currentTooltipElement === obj;
 }
+
+// Dismiss tooltip on touch outside (mobile)
+document.addEventListener('touchstart', (e: TouchEvent) => {
+    if (!currentTooltipElement) return;
+    const target = e.target as HTMLElement;
+    if (!tooltip.contains(target) && target !== currentTooltipElement && !currentTooltipElement.contains(target)) {
+        HideTooltip(currentTooltipElement);
+    }
+}, { passive: true });

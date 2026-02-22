@@ -426,17 +426,73 @@ export class PageManager {
 new PageManager();
 
 // Menu toggle functionality
-const menuToggle: HTMLElement | null = document.querySelector('.menu-toggle')!;
-const menu: HTMLElement | null = document.getElementById('menu')!;
+const menuToggle = document.querySelector('.menu-toggle') as HTMLElement;
+const menu = document.getElementById('menu')!;
 
-menuToggle.addEventListener('click', (): void => {
-    menu.classList.toggle('visible');
+// Create overlay element for mobile menu
+const menuOverlay = document.createElement('div');
+menuOverlay.className = 'menu-overlay';
+document.body.appendChild(menuOverlay);
+
+function toggleMenu(forceClose?: boolean) {
+    if (forceClose) {
+        menu.classList.remove('visible');
+        menuOverlay.classList.remove('visible');
+    } else {
+        menu.classList.toggle('visible');
+        menuOverlay.classList.toggle('visible');
+    }
+}
+
+menuToggle.addEventListener('click', (e: MouseEvent): void => {
+    e.stopPropagation();
+    toggleMenu();
+});
+
+// Close menu when clicking overlay
+menuOverlay.addEventListener('click', (): void => {
+    toggleMenu(true);
 });
 
 // Close menu when clicking outside
 document.addEventListener('click', (e: MouseEvent): void => {
     const target: HTMLElement = e.target as HTMLElement;
     if (!menu.contains(target) && !menuToggle.contains(target)) {
-        menu.classList.remove('visible');
+        toggleMenu(true);
     }
 });
+
+// Swipe gesture to open/close menu on mobile
+let touchStartX = 0;
+let touchStartY = 0;
+let touchTracking = false;
+
+document.addEventListener('touchstart', (e: TouchEvent) => {
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    // Only track edge swipes (left 30px) for opening, or anywhere if menu is open
+    touchTracking = touchStartX < 30 || menu.classList.contains('visible');
+}, { passive: true });
+
+document.addEventListener('touchend', (e: TouchEvent) => {
+    if (!touchTracking) return;
+    touchTracking = false;
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = Math.abs(touch.clientY - touchStartY);
+
+    // Only trigger on horizontal swipes (more horizontal than vertical, at least 50px)
+    if (Math.abs(deltaX) > 50 && deltaX > deltaY) {
+        if (deltaX > 0 && !menu.classList.contains('visible')) {
+            // Swipe right -> open menu
+            toggleMenu();
+        }
+    } else if (deltaX < -50 && Math.abs(deltaX) > deltaY) {
+        if (menu.classList.contains('visible')) {
+            // Swipe left -> close menu
+            toggleMenu(true);
+        }
+    }
+}, { passive: true });

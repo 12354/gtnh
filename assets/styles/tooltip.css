@@ -109,3 +109,47 @@
     text-align: right;
     -moz-appearance: textfield;
 }
+
+/* ===== Mobile Tooltip & Dropdown Styles ===== */
+@media screen and (max-width: 768px) {
+    #tooltip {
+        max-width: calc(100vw - 16px);
+        max-height: 50vh;
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    #tooltip-header {
+        font-size: 14px;
+    }
+
+    #tooltip-debug {
+        font-size: 7px;
+    }
+
+    #dropdown {
+        max-width: calc(100vw - 16px);
+        max-height: 70vh;
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    .dropdown-list {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .dropdown-item {
+        padding: 6px 4px;
+        min-height: 40px;
+    }
+
+    .item-name {
+        font-size: 12px;
+    }
+
+    .crafter-count {
+        width: 120px;
+        min-height: 32px;
+    }
+}

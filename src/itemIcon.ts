@@ -24,6 +24,11 @@ window.setInterval(() => {
 
 let highlightStyle: HTMLStyleElement = document.getElementById('item-icon-highlight-style') as HTMLStyleElement;
 
+// Touch state tracking for distinguishing taps from long-presses
+let activeTouchIcon: IconBox | null = null;
+let touchStartTime = 0;
+let touchMoved = false;
+
 export class IconBox extends HTMLElement
 {
     public obj:RecipeObject | null = null;
@@ -31,28 +36,59 @@ export class IconBox extends HTMLElement
     constructor()
     {
         super();
-        
+
         this.addEventListener("mouseenter", () => {
-            const obj = this.GetDisplayObject();
-            if (obj) {
-                const actionType = this.getAttribute('data-action');
-                const actionText = actionType ? actions[actionType] : undefined;
-                ShowTooltip(this, {
-                    goods: obj,
-                    action: actionText ?? "Left/Right click to view Production/Consumption for this item"
-                });
-                
-                this.UpdateHighlightStyle();
-            }
+            this.showTooltipForIcon();
         });
-        
+
         this.addEventListener("mouseleave", () => {
             highlightStyle.textContent = '';
         });
-        
+
+        // Touch support: long-press shows tooltip, tap triggers action
+        this.addEventListener("touchstart", (e) => {
+            activeTouchIcon = this;
+            touchStartTime = Date.now();
+            touchMoved = false;
+        }, { passive: true });
+
+        this.addEventListener("touchmove", () => {
+            touchMoved = true;
+        }, { passive: true });
+
+        this.addEventListener("touchend", (e) => {
+            if (activeTouchIcon !== this || touchMoved) {
+                activeTouchIcon = null;
+                return;
+            }
+            const holdDuration = Date.now() - touchStartTime;
+            activeTouchIcon = null;
+
+            if (holdDuration >= 400) {
+                // Long press -> show tooltip (like hover)
+                e.preventDefault();
+                this.showTooltipForIcon();
+            }
+            // Short tap falls through to click handler naturally
+        });
+
         this.addEventListener('contextmenu', this.RightClick);
         this.addEventListener('click', this.LeftClick);
         this.UpdateIconId();
+    }
+
+    private showTooltipForIcon() {
+        const obj = this.GetDisplayObject();
+        if (obj) {
+            const actionType = this.getAttribute('data-action');
+            const actionText = actionType ? actions[actionType] : undefined;
+            ShowTooltip(this, {
+                goods: obj,
+                action: actionText ?? "Left/Right click to view Production/Consumption for this item"
+            });
+
+            this.UpdateHighlightStyle();
+        }
     }
 
     private StartOredictCycle(oredict: OreDict) {

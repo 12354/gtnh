@@ -105,7 +105,23 @@
     padding: 4px 8px;
 }
 
-/* Media query for small screens */
+/* Menu overlay - darkens background when menu is open on mobile */
+.menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+}
+
+.menu-overlay.visible {
+    display: block;
+}
+
+/* Media query for tablet screens */
 @media screen and (max-width: 1200px) {
     .menu-toggle {
         display: block;
@@ -133,3 +149,95 @@
     }
 }
 
+/* Media query for phone screens */
+@media screen and (max-width: 768px) {
+    #main {
+        flex-direction: column;
+        gap: 0;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .menu-toggle {
+        display: block;
+        min-height: 44px;
+        min-width: 44px;
+        font-size: 20px;
+        padding: 8px 12px;
+        top: 4px;
+        left: 4px;
+    }
+
+    #menu {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(300px, 85vw);
+        transform: translateX(-100%);
+        z-index: 999;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #menu.visible {
+        transform: translateX(0);
+    }
+
+    .menu-container {
+        min-width: unset;
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .menu-header {
+        font-size: 18px;
+    }
+
+    .menu-links {
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .menu-links a {
+        padding: 4px 2px;
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .page-button {
+        padding: 6px 4px;
+        min-height: 40px;
+        font-size: 13px;
+    }
+
+    .page-list {
+        gap: 4px;
+    }
+
+    .active-page {
+        padding: 6px 4px;
+    }
+
+    .active-page input {
+        min-height: 32px;
+        font-size: 13px;
+    }
+
+    .new-page-form {
+        gap: 6px;
+    }
+
+    .new-page-form input {
+        min-height: 36px;
+    }
+
+    .new-page-form button {
+        min-height: 36px;
+    }
+
+    .status-message {
+        margin-left: 48px;
+        width: auto;
+    }
+}

@@ -47,27 +47,40 @@ export class Dropdown {
     public show(target: HTMLElement, populateCallback: (container: HTMLElement) => void): void {
         this.currentTarget = target;
         this.currentPopulateCallback = populateCallback;
-        
+
         // Clear previous content
         this.dropdown.innerHTML = "";
-        
+
         // Call the provided callback to populate the dropdown
         populateCallback(this.dropdown);
-        
+
         this.dropdown.style.display = "block";
-        
+
         // Position the dropdown
-        // Needs reduced set here for some reason.
         this.dropdown.style.zIndex = "10000";
         const targetRect = target.getBoundingClientRect();
         const dropdownRect = this.dropdown.getBoundingClientRect();
-        
-        // Check if there's enough space below
-        // Save some space for dynamic parts of the dropdown.
-        const spaceBelow = window.innerHeight - targetRect.bottom - 50;
-        
-        this.dropdown.style.top = `${targetRect.bottom - Math.max(0, (dropdownRect.height - spaceBelow))}px`;
-        this.dropdown.style.left = `${targetRect.right + Math.max(0, (targetRect.width - dropdownRect.width) / 2)}px`;
+        const isMobileView = window.innerWidth <= 768;
+
+        if (isMobileView) {
+            // On mobile, center the dropdown horizontally and position near the target
+            const dropdownWidth = Math.min(dropdownRect.width, window.innerWidth - 16);
+            const left = Math.max(8, (window.innerWidth - dropdownWidth) / 2);
+            this.dropdown.style.left = `${left}px`;
+
+            // Position below target if space allows, otherwise above
+            const spaceBelow = window.innerHeight - targetRect.bottom - 8;
+            if (spaceBelow >= dropdownRect.height || spaceBelow >= targetRect.top) {
+                this.dropdown.style.top = `${Math.min(targetRect.bottom + 4, window.innerHeight - dropdownRect.height - 8)}px`;
+            } else {
+                this.dropdown.style.top = `${Math.max(8, targetRect.top - dropdownRect.height - 4)}px`;
+            }
+        } else {
+            // Desktop positioning
+            const spaceBelow = window.innerHeight - targetRect.bottom - 50;
+            this.dropdown.style.top = `${targetRect.bottom - Math.max(0, (dropdownRect.height - spaceBelow))}px`;
+            this.dropdown.style.left = `${targetRect.right + Math.max(0, (targetRect.width - dropdownRect.width) / 2)}px`;
+        }
     }
 
     public hide(): void {

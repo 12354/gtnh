@@ -17,7 +17,6 @@ body {
     background-color: #212121;
     word-break: break-word;
     height: 100vh;
-    min-width: 800px;
     overflow-y: hidden;
     overflow-x: auto;
 }
@@ -260,4 +259,81 @@ a:hover {
     color: #FFD700;
     text-decoration: underline;
     text-decoration-thickness: 2px;
+}
+
+/* ===== Mobile Responsive Styles ===== */
+
+/* Touch-friendly tap targets - minimum 44px for interactive elements */
+@media screen and (max-width: 768px) {
+    body {
+        font-size: 14px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        height: auto;
+        min-height: 100vh;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    button {
+        min-height: 36px;
+        min-width: 36px;
+        font-size: 14px;
+    }
+
+    input {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+        min-height: 36px;
+    }
+
+    select {
+        font-size: 14px;
+        min-height: 36px;
+        padding: 4px 8px;
+    }
+
+    .text-small {
+        font-size: 8px;
+        line-height: 10px;
+    }
+
+    .panel {
+        max-width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+        box-sizing: border-box;
+    }
+
+    #panels {
+        padding: 8px;
+    }
+
+    #loading {
+        padding: 24px 16px;
+        max-width: calc(100vw - 48px);
+    }
+
+    #confirm-dialog {
+        padding: 16px;
+        max-width: calc(100vw - 48px);
+    }
+
+    #confirm-dialog p {
+        font-size: 12px;
+    }
+
+    #confirm-dialog button {
+        min-width: 80px;
+        padding: 8px 12px;
+    }
+
+    .scroll-area {
+        -webkit-overflow-scrolling: touch;
+    }
 }
