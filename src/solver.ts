@@ -1,5 +1,5 @@
 import { Model, Solution } from "./types/javascript-lp-solver.js";
-import { PageModel, RecipeGroupModel, RecipeModel, ProductModel, FlowInformation, LinkAlgorithm, OverclockResult } from './page.js';
+import { PageModel, RecipeGroupModel, RecipeModel, ProductModel, FlowInformation, LinkAlgorithm, OverclockResult, InfeasibilityInfo } from './page.js';
 import { Goods, Item, OreDict, Recipe, RecipeIoType, RecipeObject, Repository } from "./repository.js";
 import { singleBlockMachine, machines, notImplementedMachine, GetSingleBlockMachine, GetParameter } from "./machines.js";
 import { voltageTier } from "./utils.js";
@@ -286,6 +286,73 @@ function ApplySolutionGroup(group:RecipeGroupModel, solution:Solution, model:Mod
     }
 }
 
+function DiagnoseInfeasibility(model:Model):InfeasibilityInfo {
+    const PENALTY = 1e6;
+    let relaxed:Model = {
+        optimize: model.optimize,
+        opType: model.opType,
+        constraints: {...model.constraints},
+        variables: {},
+    };
+
+    // Copy all existing variables
+    for (const varName in model.variables) {
+        relaxed.variables[varName] = {...model.variables[varName]};
+    }
+
+    // For each equality constraint, add slack and surplus variables
+    let constraintNames:string[] = [];
+    for (const cName in model.constraints) {
+        let c = model.constraints[cName];
+        if (c.equal !== undefined) {
+            constraintNames.push(cName);
+            let slackPos = `_slack_pos_${cName}`;
+            let slackNeg = `_slack_neg_${cName}`;
+            relaxed.variables[slackPos] = {"obj": PENALTY, [cName]: 1};
+            relaxed.variables[slackNeg] = {"obj": PENALTY, [cName]: -1};
+        }
+    }
+
+    let relaxedSolution = window.solver.Solve(relaxed);
+
+    let problematicLinks:{goodsId: string, goodsName: string, constraintName: string, slack: number}[] = [];
+    let problematicFixedCrafters:{recipeIid: number, constraintName: string, slack: number}[] = [];
+
+    for (const cName of constraintNames) {
+        let slackVal = ((relaxedSolution[`_slack_pos_${cName}`] || 0) as number)
+                     + ((relaxedSolution[`_slack_neg_${cName}`] || 0) as number);
+        if (slackVal < 0.001) continue;
+
+        let linkMatch = cName.match(/^link_(\d+)_(.+)$/);
+        if (linkMatch) {
+            let goodsId = linkMatch[2];
+            let goods = Repository.current.GetById<Goods>(goodsId);
+            problematicLinks.push({
+                goodsId: goodsId,
+                goodsName: goods?.name ?? goodsId,
+                constraintName: cName,
+                slack: slackVal,
+            });
+            continue;
+        }
+
+        let fixedMatch = cName.match(/^fixed_(\d+)$/);
+        if (fixedMatch) {
+            problematicFixedCrafters.push({
+                recipeIid: parseInt(fixedMatch[1]),
+                constraintName: cName,
+                slack: slackVal,
+            });
+        }
+    }
+
+    // Sort by slack descending (most problematic first)
+    problematicLinks.sort((a, b) => b.slack - a.slack);
+    problematicFixedCrafters.sort((a, b) => b.slack - a.slack);
+
+    return { problematicLinks, problematicFixedCrafters };
+}
+
 export function SolvePage(page:PageModel):void
 {
     try {
@@ -312,6 +379,15 @@ export function SolvePage(page:PageModel):void
         let solution = window.solver.Solve(model);
         console.log("Solve solution",solution);
         page.status = solution.feasible ? solution.bounded ? "solved" : "unbounded" : "infeasible";
+        page.infeasibilityInfo = undefined;
+        if (!solution.feasible) {
+            try {
+                page.infeasibilityInfo = DiagnoseInfeasibility(model);
+                console.log("Infeasibility diagnosis", page.infeasibilityInfo);
+            } catch (e) {
+                console.error("Error diagnosing infeasibility", e);
+            }
+        }
         ApplySolutionGroup(page.rootGroup, solution, model, solution.feasible);
     } catch (error) {
         console.error("Error solving page",error);
