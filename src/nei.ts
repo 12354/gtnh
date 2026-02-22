@@ -114,6 +114,7 @@ class NeiRecipeTypeInfo extends Array implements NeiRowAllocator<Recipe>
             h++;
             h += Math.ceil(gtRecipe.metadata.length / 2);
         }
+        h += 2; // Space for input/output item names
         return h;
     }
 
@@ -214,6 +215,25 @@ class NeiRecipeTypeInfo extends Array implements NeiRowAllocator<Recipe>
                 }
                 dom.push(`<span class="text-small">${this.FormatCircuitConflicts(recipe.gtRecipe.circuitConflicts)}</span>`);
             }
+            // Add input/output item names
+            let inputNames: string[] = [];
+            let outputNames: string[] = [];
+            for (const item of recipeItems) {
+                const name = getRecipeItemName(item);
+                if (name && item.type <= RecipeIoType.FluidInput) {
+                    if (!inputNames.includes(name))
+                        inputNames.push(name);
+                } else if (name) {
+                    if (!outputNames.includes(name))
+                        outputNames.push(name);
+                }
+            }
+            dom.push(`<div class="nei-recipe-names">`);
+            if (inputNames.length > 0)
+                dom.push(`<span class="nei-recipe-name-line" title="${inputNames.join(', ')}">In: ${inputNames.join(', ')}</span>`);
+            if (outputNames.length > 0)
+                dom.push(`<span class="nei-recipe-name-line" title="${outputNames.join(', ')}">Out: ${outputNames.join(', ')}</span>`);
+            dom.push(`</div>`);
             dom.push(`</div>`);
         }
         return dom.join("");
@@ -264,6 +284,17 @@ function MetadataToString(metadata:GtRecipeMetadata, recipe:Recipe):string | nul
         case "nke_range": return DisplayNkeRange(metadata.value);
         default: return `${metadata.key}: ${formatAmount(metadata.value)}`;
     }
+}
+
+function getRecipeItemName(item: RecipeInOut): string {
+    const goods = item.goods;
+    if (goods instanceof Goods) {
+        return goods.name;
+    }
+    if (goods instanceof OreDict && goods.items.length > 0) {
+        return goods.items[0].name;
+    }
+    return '';
 }
 
 class RecipeTypeAllocator implements NeiRowAllocator<RecipeType>
