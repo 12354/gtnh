@@ -151,4 +151,38 @@
         min-height: 36px;
         font-size: 18px;
     }
+
+    /* Mobile list view for items */
+    .nei-item-list-row {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        height: 36px;
+        padding: 0 4px;
+        box-sizing: border-box;
+        cursor: pointer;
+        border-bottom: 1px solid #B0B0B0;
+    }
+
+    .nei-item-list-row:active {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .nei-item-list-row item-icon {
+        flex-shrink: 0;
+    }
+
+    .nei-item-name {
+        color: #3F3F3F;
+        font-size: 12px;
+        line-height: 36px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-shadow: none;
+        flex: 1;
+        min-width: 0;
+    }
 }
